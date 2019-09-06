@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Wang Jialu">
+  
+  
+  <title>Redis | WangJiaLu `s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Redis,">
+  
+
+  
+  <meta name="description" content="Redis特点：不支持sql语法。存储结构跟关系型数据库中的那种关系完全不相同，nosql中存储的数据都是KV格式NoSQL的世界中没有通用的语言，每种nosql数据库都有自己的api语法，以及擅长的业务场景。NoSQL中的产品种类相当多：MongodbRedisHbase hadoop Cassandra hadoop">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2016-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Wang Jialu",
+    share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">Giraffe.*</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | 心有所向 眼及之处皆是远方.</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/Giraffe-w" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2016-04-30
+    </span>
+    
+      <span>
+        | <a href="/categories/Redis/"><i class="fa fa-bookmark"></i>Redis</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    Redis
+  </h1>
+  
+  <article class="passage-article">
+    </li>
+</ul>
+</li>
+</ul>
+<h1 id="Redis-1"><a href="#Redis-1" class="headerlink" title="Redis"></a>Redis</h1><h1 id="一-简介"><a href="#一-简介" class="headerlink" title="一.简介"></a>一.简介</h1><h2 id="1-nosql介绍"><a href="#1-nosql介绍" class="headerlink" title="1.nosql介绍"></a>1.nosql介绍</h2><p>Nosql一类新出现的数据库not only sql </p>
+<h3 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h3><ul>
+<li>不支持sql语法。</li>
+<li>存储结构跟关系型数据库中的那种关系完全不相同，nosql中存储的数据都是KV格式</li>
+<li>NoSQL的世界中没有通用的语言，每种nosql数据库都有自己的api语法，以及擅长的业务场景。</li>
+<li>NoSQL中的产品种类相当多：<ul>
+<li>Mongodb</li>
+<li>Redis</li>
+<li>Hbase hadoop </li>
+<li>Cassandra hadoop </li>
+</ul>
+</li>
+</ul>
+<h3 id="与sql数据库比较"><a href="#与sql数据库比较" class="headerlink" title="与sql数据库比较"></a>与sql数据库比较</h3><ul>
+<li>适用场景不同：sql数据库适合任何用于关系特别复杂的数据库查询场景，nosql反之</li>
+<li>“事务”特性的支持：sql对事务的支持非常完善，而nosql基本不支持事务</li>
+<li>两者在不断的取长补短，呈现融合趋势</li>
+</ul>
+<h3 id="Redis简介"><a href="#Redis简介" class="headerlink" title="Redis简介"></a>Redis简介</h3><ul>
+<li>Redis是一个开源的使用ANSI C语言编写，支持网络，可以与内存亦可持久化的日志型，key-Value数据库，并提供多种语言API。从2010年3月15日起，Redis的开发工作有VMware主持。从2013年5月开始，Redis的开发有Pivotal赞助。<ul>
+<li>API：操作函数的接口</li>
+</ul>
+</li>
+<li>Redis是NoSQL技术阵营中的一员，他通过多种键值数据类型来适应不同场景下的存储需求，借助一些高层的接口使用其可以胜任，如缓存、队列系统的不同角色</li>
+</ul>
+<h3 id="Redis特性"><a href="#Redis特性" class="headerlink" title="Redis特性"></a>Redis特性</h3><p>Redis与其他 key  -  Value缓存产品有以下三个特点</p>
+<ul>
+<li>Redis支持数据的持久化，可以将内存中的数据保存在磁盘中，重启的时候可以再次加载进行使用。</li>
+<li>Redis不仅仅支持简单的Key - Value 类型数据名同事还提供 list ， set  , zset  , hash 等数据结构的存储。<ul>
+<li>list : 列表类型</li>
+<li>set : 字典类型</li>
+<li>zset : 有序的集合</li>
+<li>hash : 哈希</li>
+</ul>
+</li>
+<li>Redis支持数据的备份，级master-slave模式的数据备份。<ul>
+<li>master - slave ： 主从模式的数据备份</li>
+</ul>
+</li>
+</ul>
+<h3 id="Redis优势"><a href="#Redis优势" class="headerlink" title="Redis优势"></a>Redis优势</h3><ul>
+<li><p>性能极高 -Redis能读的速度是<strong>110000次/s</strong> ,写的速度是<strong>81000次/s。</strong></p>
+</li>
+<li><p>丰富的数据类型 -Redis支持二进制案例的 Strings ， Lists , Hashes , Sets 级 Ordered Sets 数据类型操作。</p>
+<ul>
+<li>Strings ：字符串类型</li>
+<li>Lists:列表类型</li>
+<li>Hashes:哈希</li>
+<li>Sets: 无序字典</li>
+<li>Ordered Sets  ：有序字典</li>
+</ul>
+</li>
+<li><p>原子 - Redis的所有操作都是原子性的，同时Redis还支持集合操作，合并后的操作执行。</p>
+<ul>
+<li>原子性：原子性的操作没有多进程多线程的问题，多线程可能存在抢，原子性没有。</li>
+</ul>
+</li>
+<li><p>丰富的特性- Redis还支持publish/subscribe ， 通知 ， key过期等特性。</p>
+</li>
+</ul>
+<p>###Redis应用场景</p>
+<ul>
+<li>用老做缓存（encache/memcached） — redis的所有数据都放在内存中的（内存数据库）</li>
+<li>可以在某些特定应用场景下代替传统数据库 — 比如社交类的应用。</li>
+<li>在一些大型系统中，巧妙地实现一些特定的功能：session 、 购物车 </li>
+<li>只要你有丰富的想象力 ，redis可以用在任何地方，给你无限的惊喜…….</li>
+</ul>
+<h3 id="推荐阅读："><a href="#推荐阅读：" class="headerlink" title="推荐阅读："></a>推荐阅读：</h3><ul>
+<li>redis官方网站</li>
+<li><a href="http://www.redis.cn" target="_blank" rel="noopener">redis中文网站</a></li>
+</ul>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis-1"><span class="toc-text">Redis</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一-简介"><span class="toc-text">一.简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-nosql介绍"><span class="toc-text">1.nosql介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#特点：-1"><span class="toc-text">特点：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#与sql数据库比较"><span class="toc-text">与sql数据库比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis简介"><span class="toc-text">Redis简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis特性"><span class="toc-text">Redis特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis优势"><span class="toc-text">Redis优势</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#推荐阅读："><span class="toc-text">推荐阅读：</span></a></li></ol></li></ol></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/1.Redis-介绍/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="WeChatID">
+              
+                <p>WeChatID</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/2.Redis-安装/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/Redisearch操作/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+  
+  
+</div>
+    
+
+
+
+
+
+    
+  </body>
+</html>

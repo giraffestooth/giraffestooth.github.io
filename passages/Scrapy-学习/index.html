@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Wang Jialu">
+  
+  
+  <title>scrapyd入门 | WangJiaLu `s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="scrapyd,">
+  
+
+  
+  <meta name="description" content="创建Scrapy项目在抓取之前，你需要新建一个Scrapy工程。进入一个你想用来保存代码的目录，然后执行：">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2016-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Wang Jialu",
+    share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">Giraffe.*</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | 心有所向 眼及之处皆是远方.</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/Giraffe-w" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2017-08-12
+    </span>
+    
+      <span>
+        | <a href="/categories/scrapyd/"><i class="fa fa-bookmark"></i>scrapyd</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    scrapyd入门
+  </h1>
+  
+  <article class="passage-article">
+    <h2 id="创建Scrapy项目-1"><a href="#创建Scrapy项目-1" class="headerlink" title="创建Scrapy项目"></a>创建Scrapy项目</h2><p>在抓取之前，你需要新建一个Scrapy工程。进入一个你想用来保存代码的目录，然后执行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy startproject my_scrapy</span><br></pre></td></tr></table></figure>
+
+<h2 id="定义Item"><a href="#定义Item" class="headerlink" title="定义Item"></a>定义Item</h2><p>Items是将要装载抓取的数据的容器，它工作方式像python里面的字典，但它提供更多的保护，比如对未定义的字段填充以防止拼写错误。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> scrapy.item <span class="keyword">import</span> Item, Field </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DmozItem</span><span class="params">(Item)</span>:</span></span><br><span class="line">    title = Field()</span><br><span class="line">    link = Field()</span><br><span class="line">    desc = Field()</span><br></pre></td></tr></table></figure>
+
+<h2 id="制作爬虫"><a href="#制作爬虫" class="headerlink" title="制作爬虫"></a>制作爬虫</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy genspider my_gender www.baidu.com</span><br></pre></td></tr></table></figure>
+
+<h2 id="运行爬虫"><a href="#运行爬虫" class="headerlink" title="运行爬虫"></a>运行爬虫</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy crawl my_gender</span><br></pre></td></tr></table></figure>
+
+<h2 id="scrapy-redis"><a href="#scrapy-redis" class="headerlink" title="scrapy_redis"></a>scrapy_redis</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DUPEFILTER_CLASS = <span class="string">"scrapy_redis.dupefilter.RFPDupeFilter"</span>   <span class="comment">#指定那个去重方法给request对象去重</span></span><br><span class="line">SCHEDULER = <span class="string">"scrapy_redis.scheduler.Scheduler"</span>        <span class="comment">#指定scheduler队列</span></span><br><span class="line">SCHEDULER_PERSIST = <span class="literal">True</span>                  <span class="comment">#队列中的内容是否持久保存，为False的时候在关闭redis时候情况redis</span></span><br><span class="line">REDIS_URL = <span class="string">'redis://127.0.0.1:6379'</span>   <span class="comment">#redis数据库地址可以写成如下形式</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="scrapy-请求头"><a href="#scrapy-请求头" class="headerlink" title="scrapy-请求头"></a>scrapy-请求头</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Crawl responsibly by identifying yourself (and your website) on the user-agent</span></span><br><span class="line">USER_AGENT = <span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="scrapy-图片下载路径"><a href="#scrapy-图片下载路径" class="headerlink" title="scrapy-图片下载路径"></a>scrapy-图片下载路径</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IMAGES_STORE = <span class="string">"./image"</span>  <span class="comment"># 下载图片路径</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="允许中文写入"><a href="#允许中文写入" class="headerlink" title="允许中文写入"></a>允许中文写入</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FEED_EXPORT_ENCODING=<span class="string">'utf-8'</span>  <span class="comment"># 允需写入中文</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="写入文件"><a href="#写入文件" class="headerlink" title="写入文件"></a>写入文件</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scrapy crawl qiche -o qichezhijia.csv   <span class="comment"># 写入csv文件</span></span><br><span class="line">scrapy crawl qiche -o qichezhijia.txt   <span class="comment"># 写入txt文件</span></span><br><span class="line">scrapy crawl qiche -o qichezhijia.json   <span class="comment"># 写入json文件</span></span><br></pre></td></tr></table></figure>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#创建Scrapy项目-1"><span class="toc-text">创建Scrapy项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定义Item"><span class="toc-text">定义Item</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#制作爬虫"><span class="toc-text">制作爬虫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运行爬虫"><span class="toc-text">运行爬虫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#scrapy-redis"><span class="toc-text">scrapy_redis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#scrapy-请求头"><span class="toc-text">scrapy-请求头</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#scrapy-图片下载路径"><span class="toc-text">scrapy-图片下载路径</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#允许中文写入"><span class="toc-text">允许中文写入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写入文件"><span class="toc-text">写入文件</span></a></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/Scrapy-学习/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="WeChatID">
+              
+                <p>WeChatID</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/1.Python基础/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/1.Scrapy-概念/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+  
+  
+</div>
+    
+
+
+
+
+
+    
+  </body>
+</html>

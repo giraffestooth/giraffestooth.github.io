@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Wang Jialu">
+  
+  
+  <title>阿里云服务器docker搭建fastDfs | WangJiaLu `s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="docker,Docker,FastDfs,">
+  
+
+  
+  <meta name="description" content="阿里云服务器docker搭建fastDfs之前写过了在win系统下使用docker搭建fastDfs，这篇讲一下如何在阿里云服务器部署。">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2016-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Wang Jialu",
+    share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">Giraffe.*</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | 心有所向 眼及之处皆是远方.</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/Giraffe-w" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2019-06-01
+    </span>
+    
+      <span>
+        | <a href="/categories/docker/"><i class="fa fa-bookmark"></i>docker</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    阿里云服务器docker搭建fastDfs
+  </h1>
+  
+  <article class="passage-article">
+    <h2 id="阿里云服务器docker搭建fastDfs-1"><a href="#阿里云服务器docker搭建fastDfs-1" class="headerlink" title="阿里云服务器docker搭建fastDfs"></a>阿里云服务器docker搭建fastDfs</h2><p>之前写过了在win系统下使用docker搭建fastDfs，这篇讲一下如何在阿里云服务器部署。</p>
+<ul>
+<li><p>首先在阿里云服务器上开放端口  </p>
+<p>阿里云首页点击控制台，在最近使用中选择云服务器ECS，跳转新的页面，点击我的资源里的云服务器，跳转实例列表页面，最右边有一个更多，选择网络和安全组里的安全组配置，点击配置规则，上面有一个添加安全组规则，添加要开放的端口。</p>
+<p>端口范围例子：8888/8888</p>
+<p>授权对象列例子：0.0.0.0/0</p>
+<ul>
+<li>8000    tornado或者django默认端口</li>
+<li>22122     docker fastdfs容器端口</li>
+<li>8888        nignx默认端口</li>
+<li>80             tornado端口</li>
+<li>3306         mysql端口</li>
+<li>6379         redis端口</li>
+<li>8080         vue端口</li>
+</ul>
+</li>
+<li><p>安装docker</p>
+<ul>
+<li><h3 id="升级yum"><a href="#升级yum" class="headerlink" title="升级yum"></a>升级yum</h3><p>sudo yum update</p>
+<h3 id="卸载旧版本docker"><a href="#卸载旧版本docker" class="headerlink" title="卸载旧版本docker"></a>卸载旧版本docker</h3><p>sudo yum remove docker docker-common docker-selinux docker-engine</p>
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><p>sudo yum install -y yum-utils device-mapper-persistent-data lvm2</p>
+<h3 id="设置源"><a href="#设置源" class="headerlink" title="设置源"></a>设置源</h3><p>sudo yum-config-manager –add-repo <a href="https://download.docker.com/linux/centos/docker-ce.repo" target="_blank" rel="noopener">https://download.docker.com/linux/centos/docker-ce.repo</a></p>
+<h3 id="安装docker"><a href="#安装docker" class="headerlink" title="安装docker"></a>安装docker</h3><p>sudo yum install docker-ce</p>
+<h3 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h3><p>sudo systemctl start docker</p>
+<h3 id="查看docker版本"><a href="#查看docker版本" class="headerlink" title="查看docker版本"></a>查看docker版本</h3><p>docker version</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>在docker中将fastdfs镜像下载</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull delron/fastdfs</span><br></pre></td></tr></table></figure>
+
+<p>第一种：在docker容器内下载图片</p>
+<p>​    </p>
+<p>step1:</p>
+<p>  使用docker镜像构建tracker容器（跟踪服务器，起到调度的作用），这里tracker服务将会自动映射到宿主机上 </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --network=host --name tracker -v /root:/var/root delron/fastdfs tracker</span><br></pre></td></tr></table></figure>
+
+<p>step2:</p>
+<p>使用docker镜像构建storage容器（存储服务器，提供容量和备份服务），这里storage容器需要依赖tracker服务，传入你的tracker服务的ip地址，端口默认是22122，ip地址也就是你宿主机的ip </p>
+<p>这里的172.16.187.153是服务器centos的ip地址  通过ipconfig即可查看</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --network=host --name storage -e TRACKER_SERVER=<span class="number">172.16</span><span class="number">.187</span><span class="number">.153</span>:<span class="number">22122</span> -v /root:/var/root -e GROUP_NAME=group1 delron/fastdfs storage</span><br></pre></td></tr></table></figure>
+
+<p>此时，命令行输入 docker ps 就可以看到两套服务都已经启动 </p>
+<p>step3:</p>
+<p>进入正在后台运行的storage容器</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">exec</span> -it storage /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p>随便下载一张图片,这个不用担心，因为在容器中如果不提交仓库的话，该图片是不会保存的 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://v3u.cn/v3u/Public/images/logo.png</span><br></pre></td></tr></table></figure>
+
+<p>将该图片通过命令上传到分布式系统中 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/fdfs_upload_file /etc/fdfs/client.conf logo.png</span><br></pre></td></tr></table></figure>
+
+<p>这时该图片已上传至文件系统，并在执行该语句后返回图片存储的网络地址 </p>
+<p>最后通过浏览器访问以下存储在Fastdfs的图片，这张图片是通过nginx代理的静态资源，默认nginx监听8888端口，所以需要加上端口号，如果是在阿里云上部署，则需要暴露外部端口8888 </p>
+<p>注意：此时查看访问图片的IP地址是自己阿里云服务器提供的  <strong>公</strong>  IP + 8888</p>
+<p>第二种：在容器外部上传图片文件</p>
+<p>step1：</p>
+<p>利用docker的特性，我们知道docker 的 -v 参数，可以自动挂载宿主机的文件件到容器中去，这样宿主和容器就可以进行无障碍的文件共享，我们通过-v参数，把宿主机的root目录自动挂载到docker容器中的/var/root目录中去。</p>
+<p>这里的172.16.187.153是服务器centos的ip地址  通过ipconfig即可查看</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建tracker</span></span><br><span class="line">docker run -d --network=host --name tracker -v /root:/var/root delron/fastdfs tracker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建storage</span></span><br><span class="line">docker run -d --network=host --name storage -e TRACKER_SERVER=<span class="number">172.16</span><span class="number">.187</span><span class="number">.153</span>:<span class="number">22122</span> -v /root:/var/root -e GROUP_NAME=group1 delron/fastdfs storage</span><br></pre></td></tr></table></figure>
+
+<p>我们可以利用docker的exec命令不进入容器，直接在宿主机的环境下调用容器内的命令，因为文件夹已经共享，所以我们输入的文件目录虽然是容器中的/var/root目录，但是实际上该上传的文件就在宿主的/root目录中 。</p>
+<p>注意：</p>
+<p>​    这个要上传的文件必须已经存在于你的路径下，也就是说本地要确实存在这个图片或者视频等文件，否则会报错。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入到挂载的共享文件夹中，上传图片</span></span><br><span class="line">cd /root</span><br><span class="line"><span class="comment"># 相当于上传图片到本地，不上传就没有可用的资源了</span></span><br><span class="line">wget https://v3u.cn/v3u/Public/images/logo.png</span><br><span class="line"><span class="comment"># 在容器外上传图片到容器内</span></span><br><span class="line">docker <span class="keyword">exec</span> -i storage /usr/bin/fdfs_upload_file /etc/fdfs/client.conf /tmp/nginx/nginx<span class="number">-1.12</span><span class="number">.2</span>/logo.png</span><br></pre></td></tr></table></figure>
+
+<p>上传成功后，fastdfs将会网络地址 </p>
+<p>然后在服务器访问即可，参照上一种的方法！</p>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#阿里云服务器docker搭建fastDfs-1"><span class="toc-text">阿里云服务器docker搭建fastDfs</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#升级yum"><span class="toc-text">升级yum</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#卸载旧版本docker"><span class="toc-text">卸载旧版本docker</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装依赖"><span class="toc-text">安装依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#设置源"><span class="toc-text">设置源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装docker"><span class="toc-text">安装docker</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动服务"><span class="toc-text">启动服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看docker版本"><span class="toc-text">查看docker版本</span></a></li></ol></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/阿里云服务器docker搭建fastDfs(2)/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+    <div class="passage-tags">
+     
+      <a href="/tags/Docker/"><i class="fa fa-tags"></i>Docker</a>
+     
+      <a href="/tags/FastDfs/"><i class="fa fa-tags"></i>FastDfs</a>
+    
+    </div>
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="WeChatID">
+              
+                <p>WeChatID</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="javascript:void(0);" data-enable="false">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/阿里云数据库开放远程连接(1)/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+  
+  
+</div>
+    
+
+
+
+
+
+    
+  </body>
+</html>

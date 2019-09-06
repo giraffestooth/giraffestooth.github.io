@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Wang Jialu">
+  
+  
+  <title>Redis | WangJiaLu `s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Redis,">
+  
+
+  
+  <meta name="description" content="王嘉璐的小站">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2016-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Wang Jialu",
+    share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">Giraffe.*</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | 心有所向 眼及之处皆是远方.</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/Giraffe-w" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2016-04-30
+    </span>
+    
+      <span>
+        | <a href="/categories/Redis/"><i class="fa fa-bookmark"></i>Redis</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    Redis
+  </h1>
+  
+  <article class="passage-article">
+    <h1 id="一-安装"><a href="#一-安装" class="headerlink" title="一.安装"></a>一.安装</h1><h2 id="Linux版本"><a href="#Linux版本" class="headerlink" title="Linux版本"></a>Linux版本</h2><h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><ul>
+<li><p>当前redos最新版本是4.0，他是一个测试版本，稳定版本3.2版本。</p>
+</li>
+<li><p>step1:下载</p>
+<blockquote>
+<p>wget <a href="http://download.redis.io/releases/redis-3.2.8.tar.gz" target="_blank" rel="noopener">http://download.redis.io/releases/redis-3.2.8.tar.gz</a></p>
+</blockquote>
+</li>
+<li><p>step2:解压</p>
+<blockquote>
+<p>tar -zxvf redis-3.2.8.tar.gz</p>
+</blockquote>
+</li>
+<li><p>step3复制，放到usr/local目录下面</p>
+<blockquote>
+<p>sudo mv ./redis-3.2.8 /usr/local/redis/</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="windos版本"><a href="#windos版本" class="headerlink" title="windos版本"></a>windos版本</h2><h3 id="1-下载Redis"><a href="#1-下载Redis" class="headerlink" title="1.下载Redis"></a>1.下载Redis</h3><p>　　百度云下载链接：<a href="https://pan.baidu.com/s/1h2e0F3R-kuwmebfEMXHcAQ" target="_blank" rel="noopener">https://pan.baidu.com/s/1h2e0F3R-kuwmebfEMXHcAQ</a>，密码：755l，msi的是安装包。</p>
+<h3 id="2-安装Redis"><a href="#2-安装Redis" class="headerlink" title="2.安装Redis"></a>2.安装Redis</h3><p>　　下载msi格式的安装包，直接双击安装，按照安装步骤操作。</p>
+<h3 id="3-启动Redis"><a href="#3-启动Redis" class="headerlink" title="3.启动Redis"></a>3.启动Redis</h3><p>　　在cmd命令窗口中进入Redis安装目录，执行命令：redis-server redis.windows.conf，启动Redis。</p>
+<p>然后进入到Redis安装目录，双击redis-cli.exe出现命令窗口，</p>
+<p>显示 127.0.0.1:6379&gt;表示运行成功</p>
+<h3 id="4-输入"><a href="#4-输入" class="headerlink" title="4.输入"></a>4.输入</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">set name zhangsan</span><br><span class="line">ok</span><br><span class="line">get name</span><br><span class="line">&apos;zhangsan&apos;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-设置为服务"><a href="#5-设置为服务" class="headerlink" title="5.设置为服务"></a>5.设置为服务</h3><p>　　上述第3中启动Redis的方法不是很好，因为关闭启动命令窗口后Redis也停止运行，所以可以将Redis的启动设置为Windows的服务运行，这样就不会有这种问题了。</p>
+<p>　　在cmd命令窗中进入Redis安装目录，执行命令：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-server --service-install redis.windows.conf --loglevel notice --service-name Redis</span><br></pre></td></tr></table></figure>
+
+<p>　　然后在Windows的服务中可以找到一个名为Redis的服务，启动此服务就可以启动redis了。</p>
+<p>注意：Windows版本的Redis启动时默认配置文件是redis.windows-service.conf，要用其他配置文件启动Redis的话，在启动命令中指定配置文件就行了。</p>
+<p> ps:服务无法启动解决方案：</p>
+<h4 id="修改服务用户"><a href="#修改服务用户" class="headerlink" title="修改服务用户"></a>修改服务用户</h4><p>属性 –&gt; 登录 –&gt; 修改为本地用户登录 – &gt; 确定</p>
+<h4 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h4><p>找到rides数据库目录将环境变量配置到path里面</p>
+<p>通过cmd窗口redis-cil 启动数据库</p>
+
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-安装"><span class="toc-text">一.安装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux版本"><span class="toc-text">Linux版本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#下载"><span class="toc-text">下载</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#windos版本"><span class="toc-text">windos版本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-下载Redis"><span class="toc-text">1.下载Redis</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-安装Redis"><span class="toc-text">2.安装Redis</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-启动Redis"><span class="toc-text">3.启动Redis</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-输入"><span class="toc-text">4.输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-设置为服务"><span class="toc-text">5.设置为服务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#修改服务用户"><span class="toc-text">修改服务用户</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#配置环境变量"><span class="toc-text">配置环境变量</span></a></li></ol></li></ol></li></ol></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/2.Redis-安装/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="WeChatID">
+              
+                <p>WeChatID</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/1.查看Win主机IP/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/1.Redis-介绍/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+  
+  
+</div>
+    
+
+
+
+
+
+    
+  </body>
+</html>

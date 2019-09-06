@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Wang Jialu">
+  
+  
+  <title>Redisearch的基本命令 | WangJiaLu `s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Redis,">
+  
+
+  
+  <meta name="description" content="Redisearch的基本命令1、FT.CREATE格式： 1234FT.CREATE &amp;#123;index&amp;#125;     MAXTEXTFIELDS NOHL [NOFREQS]    [STOPWORDS &amp;#123;num&amp;#125; &amp;#123;stopword&amp;#125; ...]    SCHEMA &amp;#123;field&amp;#125; TEXT [NOSTEM] [WEIGHT &amp;#123;weight&amp;#125;] | NUMERIC | GEO [NOINDEX] ...">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2016-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Wang Jialu",
+    share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">Giraffe.*</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | 心有所向 眼及之处皆是远方.</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/Giraffe-w" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2016-04-26
+    </span>
+    
+      <span>
+        | <a href="/categories/Redis/"><i class="fa fa-bookmark"></i>Redis</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    Redisearch的基本命令
+  </h1>
+  
+  <article class="passage-article">
+    <h1 id="Redisearch的基本命令-1"><a href="#Redisearch的基本命令-1" class="headerlink" title="Redisearch的基本命令"></a>Redisearch的基本命令</h1><p>1、FT.CREATE</p>
+<p>格式：</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FT.CREATE &#123;index&#125; </span><br><span class="line">    MAXTEXTFIELDS NOHL [NOFREQS]</span><br><span class="line">    [STOPWORDS &#123;num&#125; &#123;stopword&#125; ...]</span><br><span class="line">    SCHEMA &#123;field&#125; TEXT [NOSTEM] [WEIGHT &#123;weight&#125;] | NUMERIC | GEO [NOINDEX] ...</span><br></pre></td></tr></table></figure>
+
+<p>在redisearch中最为基本的是要创建一个index(索引，下标)，所以不管什么操作都离不开create。create的选项有几个，但是和其他比起来并不算多，我们要首先知道最基本的使用方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ft.create dept schema id numeric name text</span><br></pre></td></tr></table></figure>
+
+<p>上面创建了一个index叫dept ，它有两个字段 一个叫id，是数字类型的；一个是name，是文本类型的。<br>在redisearch中字段一共有三种类型：numeric（数字）、 text(文本) 、geo（地理位置）</p>
+<p>作为拓展，redisearch提供了很多提供搜索效率、节约内存的选项。接下来对各个选项进行描述：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">MAXTEXTFIELDS: redisearch在text字段大小<span class="number">32</span>字节及以下时对索引编码的方式和<span class="number">32</span>字节以上的编码方式不一样，当text字段超过<span class="number">32</span>字节时，启用该选项以提高索引效率。</span><br><span class="line"></span><br><span class="line">NOOFFSETS: 启用该选项代表不储存document的偏移量。</span><br><span class="line"></span><br><span class="line">NOHL: no highlight。代表不启用高亮，在搜索时，如果启用高亮，会在搜索结果中的搜索词加上“高亮”，默认显示是加&lt;b&gt;：&lt;b&gt;搜索词&lt;b&gt;。</span><br><span class="line"></span><br><span class="line">NOFIELDS: 在过滤时，某些时候会使用字段进行过滤，启用该选项后不允许该形式的过滤。</span><br><span class="line"></span><br><span class="line">NOFREQS: 弄 frequent.启用该选项，避免频繁保存term。这个term我把握不准怎么理解。可能指的是document中的一条数据？</span><br><span class="line"></span><br><span class="line"> [STOPWORDS &#123;num&#125; &#123;stopword&#125; ...]: 在索引、搜索时忽略的一组词。默认有一组stopword，其中包含了像<span class="keyword">as</span>，a,<span class="keyword">in</span>这些。num代表接下来设置的stopword的个数，<span class="number">0</span>代表关闭默认stopword。&gt;<span class="number">0</span>=n，代表后面跟着n个stopword。记住启用了stopword代表不用默认的stopwords。</span><br><span class="line"></span><br><span class="line">SCHEMA 字段关键字，随后添加字段名与字段描述。</span><br><span class="line"></span><br><span class="line">以下是字段的可选选项：</span><br><span class="line"></span><br><span class="line">SORTABLE：text或者numeric是可排序的，如果搜索时要sortby（排序）则声明。注意会增加内存开销，不需要排序则不启用。</span><br><span class="line"></span><br><span class="line">NOSTEM：redisearch默认会有一套stem（词干）分析的法则，类似于你搜索go，在结果中可能会有go，going这类词干一致的结果。nostem代表不启用。</span><br><span class="line"></span><br><span class="line">NOINDEX：字段可以选择不被索引。</span><br></pre></td></tr></table></figure>
+
+<p>2、FT.ADD</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">FT.ADD &#123;index&#125; &#123;docId&#125; &#123;score&#125; </span><br><span class="line">  [NOSAVE]</span><br><span class="line">  [REPLACE [PARTIAL]]</span><br><span class="line">  [LANGUAGE &#123;language&#125;] </span><br><span class="line">  [PAYLOAD &#123;payload&#125;]</span><br><span class="line">  [IF &#123;condition&#125;]</span><br><span class="line">  FIELDS &#123;field&#125; &#123;value&#125; [&#123;field&#125; &#123;value&#125;...]</span><br></pre></td></tr></table></figure>
+
+<p>上一篇博客里讲了FT.CREATE,提到index是基础，那么为什么是基础呢，以为接下来的每条命令都会用到创建过的index。</p>
+<p>基本使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ft.add dept dept1 <span class="number">1</span> fields id <span class="number">001</span> name dept001</span><br></pre></td></tr></table></figure>
+
+<p>代表向index dept添加一条document，这条document的id为dept1，score为1，字段id的值为数字1，name为“dept001” 。</p>
+<p>选项：</p>
+<pre><code>docId: 这里说是id并不代表只能说数字，可以是字符串。作为document的唯一标识。
+score: 评分，类似于zset里的score，范围从0~1，如果不知道打多少可以默认打1。
+NOSAVE:如果开启该选项我们不会在索引时保存真正的document。
+REPLACE:更新或者插入，删除原本的document
+PARTIAL (only applicable with REPLACE):在replace的时候指定对应的列
+FIELDS: 字段对应create index时的schema
+PAYLOAD {payload}: 在查询的时候使用，还不是太理解。。。
+IF {condition}: 配合replace使用，对判断语句进行判断后决定是否生效replace e.g. FT.ADD idx doc 1 REPLACE IF &quot;@timestamp &lt; 23323234234&quot;.
+LANGUAGE language: 指定语言，可以是中文：chinese</code></pre><p>3、FT.ADDHASH</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FT.ADDHASH &#123;index&#125; &#123;docId&#125; &#123;score&#125; LANGUAGE language [REPLACE]</span><br></pre></td></tr></table></figure>
+
+<p>addhash 我觉得是真正把redis和redisearch连起来的地方，addhash 可以添加一个redis的hash key。这几个选项和上面的差不多就不赘述了。</p>
+<p>例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hset dept2 id <span class="number">002</span> name dept002</span><br><span class="line"></span><br><span class="line">ft.addhash dept dept2 <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="C:%5CUsers%5CASUS%5CDesktop%5Cmd%E7%94%A8%E5%9B%BE%5Credisearch.png" alt></p>
+<p>4、FT.ALTER</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FT.ALTER &#123;index&#125; SCHEMA ADD &#123;field&#125; &#123;options&#125; ...</span><br></pre></td></tr></table></figure>
+
+<p>修改schema的字段结构。注意新add的会被重新索引，原本存在的不会改变。 </p>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Redisearch的基本命令-1"><span class="toc-text">Redisearch的基本命令</span></a></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/Redisearch操作/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="WeChatID">
+              
+                <p>WeChatID</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/1.Redis-介绍/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/Redisearch实操/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+  
+  
+</div>
+    
+
+
+
+
+
+    
+  </body>
+</html>
