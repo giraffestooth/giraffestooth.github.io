@@ -6,7 +6,7 @@
   <meta name="author" content="Wang Jialu">
   
   
-  <title>阿里云服务器Centos7.3安装Mysql数据库 | WangJiaLu `s blog</title>
+  <title>阿里云服务器部署——mysql数据库数据迁移 | WangJiaLu `s blog</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -15,7 +15,7 @@
   
 
   
-  <meta name="description" content="王嘉璐的小站">
+  <meta name="description" content="阿里云服务器部署——mysql数据库数据迁移开发项目时，我们都会在本地环境进行项目的编写，当我们将项目部署到服务器上时，可能存在一个问题就是服务器上的数据库没有数据，那么我们需要将本地数据库的数据迁移到服务器中的数据库中。首先，将本地环境中的数据库数据进行备份。">
 
   
 
@@ -174,11 +174,11 @@
     
   </div>
   <h1 class="passage-title">
-    阿里云服务器Centos7.3安装Mysql数据库
+    阿里云服务器部署——mysql数据库数据迁移
   </h1>
   
   <article class="passage-article">
-    <h2 id="阿里云服务器部署——mysql数据库数据迁移"><a href="#阿里云服务器部署——mysql数据库数据迁移" class="headerlink" title="阿里云服务器部署——mysql数据库数据迁移"></a>阿里云服务器部署——mysql数据库数据迁移</h2><p>开发项目时，我们都会在本地环境进行项目的编写，当我们将项目部署到服务器上时，可能存在一个问题就是服务器上的数据库没有数据，那么我们需要将本地数据库的数据迁移到服务器中的数据库中。</p>
+    <h2 id="阿里云服务器部署——mysql数据库数据迁移-1"><a href="#阿里云服务器部署——mysql数据库数据迁移-1" class="headerlink" title="阿里云服务器部署——mysql数据库数据迁移"></a>阿里云服务器部署——mysql数据库数据迁移</h2><p>开发项目时，我们都会在本地环境进行项目的编写，当我们将项目部署到服务器上时，可能存在一个问题就是服务器上的数据库没有数据，那么我们需要将本地数据库的数据迁移到服务器中的数据库中。</p>
 <p>首先，将本地环境中的数据库数据进行备份。</p>
 <p>此处使用的是：SQLyog Ultimate 64工具。</p>
 <p>在数据库右键，选择备份/导出，然后选择备份数据库，转储到SQL…</p>
@@ -198,7 +198,6 @@
 <p>点击左上角连接，连接阿里云数据库，输入阿里云服务器的IP，输入数据库密码，进行连接，需要在阿里云开放3306端口。</p>
 <p>在新建的连接中，创建要导入的数据库的库，右键阿里云数据库，点击  运行SQL文件，选择备份的文件，点击开始即可。</p>
 <p>完工！</p>
-
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -206,7 +205,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#阿里云服务器部署——mysql数据库数据迁移"><span class="toc-text">阿里云服务器部署——mysql数据库数据迁移</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#阿里云服务器部署——mysql数据库数据迁移-1"><span class="toc-text">阿里云服务器部署——mysql数据库数据迁移</span></a></li></ol>
   </div>
 </aside>
   
