@@ -6,16 +6,16 @@
   <meta name="author" content="Wang Jialu">
   
   
-  <title>Web性能压力测试之Webbench使用详解 | Giraffe `s blog</title>
+  <title>python 字典遍历方法性能对比 | Giraffe `s blog</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Webbench,">
+    <meta name="keywords" content="Python,">
   
 
   
-  <meta name="description" content="Web性能压力测试之Webbench使用详解Webbench是知名的网站压力测试工具，它是由Lionbridge公司（http://www.lionbridge.com）开发">
+  <meta name="description" content="python 字典遍历方法性能对比最近项目中使用到了dict的遍历，笔者写了几年的python,大多数都是使用dict.keys()的遍历方式。无奈项目执行过程中当dict中的元素上千万的时候，两层for循环性能实在是扛不住，于是测试了一下几种遍历方法的性能">
 
   
 
@@ -160,11 +160,11 @@
   <div class="passage">
   <div class="passage-meta">
     <span>
-      <i class="fa fa-calendar"></i>2018-06-02
+      <i class="fa fa-calendar"></i>2018-06-21
     </span>
     
       <span>
-        | <a href="/categories/Webbench/"><i class="fa fa-bookmark"></i>Webbench</a>
+        | <a href="/categories/Python/"><i class="fa fa-bookmark"></i>Python</a>
       </span>
     
     
@@ -174,40 +174,43 @@
     
   </div>
   <h1 class="passage-title">
-    Web性能压力测试之Webbench使用详解
+    python 字典遍历方法性能对比
   </h1>
   
   <article class="passage-article">
-    <h1 id="Web性能压力测试之Webbench使用详解-1"><a href="#Web性能压力测试之Webbench使用详解-1" class="headerlink" title="Web性能压力测试之Webbench使用详解"></a><a href="https://www.cnblogs.com/fjping0606/p/5852049.html" target="_blank" rel="noopener">Web性能压力测试之Webbench使用详解</a></h1><p>Webbench是知名的网站压力测试工具，它是由Lionbridge公司（<a href="http://www.lionbridge.com）开发。" target="_blank" rel="noopener">http://www.lionbridge.com）开发。</a><br>Webbench能测试处在相同硬件上，不同服务的性能以及不同硬件上同一个服务的运行状况。webbench的标准测试可以向我们展示服务器的两项内容：每秒钟相应请求数和每秒钟传输数据量。webbench不但能具有便准静态页面的测试能力，还能对动态页面（ASP,PHP,JAVA,CGI）进 行测试的能力。还有就是他支持对含有SSL的安全网站例如电子商务网站进行静态或动态的性能测试。<br>Webbench最多可以模拟3万个并发连接去测试网站的负载能力。<br>官方主页：<a href="http://home.tiscali.cz/~cz210552/webbench.html" target="_blank" rel="noopener">http://home.tiscali.cz/~cz210552/webbench.html</a><br>官方介绍：<br>Web Bench is very simple tool for benchmarking WWW or proxy servers. Uses fork() for simulating multiple clients and can use HTTP/0.9-HTTP/1.1 requests. This benchmark is not very realistic, but it can test if your HTTPD can realy handle that many clients at once (try to run some CGIs) without taking your machine down. Displays pages/min and bytes/sec. Can be used in more aggressive mode with -f switch.</p>
-<h3 id="1-WebBench安装"><a href="#1-WebBench安装" class="headerlink" title="1.WebBench安装"></a>1.WebBench安装</h3><ul>
-<li><p>yum install -y gcc ctags</p>
-</li>
-<li><p>wget <a href="http://www.ha97.com/code/webbench-1.5.tar.gz" target="_blank" rel="noopener">http://www.ha97.com/code/webbench-1.5.tar.gz</a></p>
-</li>
-<li><p>tar zxvf webbench-1.5.tar.gz</p>
-</li>
-<li><p>cd webbench-1.5</p>
-</li>
-<li><p>make</p>
-</li>
-<li><p>make install</p>
-</li>
-</ul>
-<h3 id="2-WebBench使用"><a href="#2-WebBench使用" class="headerlink" title="2.WebBench使用"></a>2.WebBench使用</h3><p>webbench -c 1000 -t 60 <a href="http://test.domain.com/phpinfo.php" target="_blank" rel="noopener">http://test.domain.com/phpinfo.php</a><br>webbench -c 并发数 -t 运行测试时间 URL</p>
-<h3 id="3-测试结果"><a href="#3-测试结果" class="headerlink" title="3.测试结果"></a>3.测试结果</h3><p>当并发300时:<br>向<a href="http://test.domain.com/phpinfo.php发起300个线程请求，持续时间60秒" target="_blank" rel="noopener">http://test.domain.com/phpinfo.php发起300个线程请求，持续时间60秒</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webbench -c 300 -t 60 http://test.domain.com/phpinfo.php</span><br></pre></td></tr></table></figure>
-
-<p>Webbench - Simple Web Benchmark 1.5<br>Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.</p>
-<p>Benchmarking: GET <a href="http://test.domain.com/phpinfo.php" target="_blank" rel="noopener">http://test.domain.com/phpinfo.php</a><br>300 clients, running 60 sec.</p>
-<p>Speed=24525 pages/min, 20794612 bytes/sec.<br>Requests: 24525 susceed, 0 failed.<br>速度：每秒钟响应请求数：24525 pages/min，每秒钟传输数据量20794612 bytes/sec.<br>返回数：24525次返回成功，0次返回失败</p>
-<p>当并发1000时:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webbench -c 1000 -t 60 http://test.domain.com/phpinfo.php</span><br></pre></td></tr></table></figure>
-
-<p>Webbench - Simple Web Benchmark 1.5<br>Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.</p>
-<p>Benchmarking: GET <a href="http://test.domain.com/phpinfo.php" target="_blank" rel="noopener">http://test.domain.com/phpinfo.php</a><br>1000 clients, running 60 sec.</p>
-<p>Speed=24920 pages/min, 21037312 bytes/sec.<br>Requests: 24833 susceed, 87 failed.</p>
-<p>当并发1000时，已经显示有87个连接failed了，说明超负荷了。</p>
-<p>备注：<br>1、压力测试工作应该放到产品上线之前进行<br>2、测试时尽量跨公网模拟正式环境进行<br>3、测试时并发应当由小逐渐加大，比如并发100时观察一下网站负载是多少、打开是否流程，并发200时又是多少、网站打开缓慢时并发是多少、网站打不开时并发又是多少</p>
+    <h1 id="python-字典遍历方法性能对比-1"><a href="#python-字典遍历方法性能对比-1" class="headerlink" title="python 字典遍历方法性能对比"></a>python 字典遍历方法性能对比</h1><p>最近项目中使用到了dict的遍历，笔者写了几年的python,大多数都是使用dict.keys()的遍历方式。无奈项目执行过程中当dict中的元素上千万的时候，两层for循环性能实在是扛不住，于是测试了一下几种遍历方法的性能</p>
+<p>import timeit</p>
+<p> DICT_SIZE = 5000</p>
+<p> testDict = dict()</p>
+<p> for i in range(DICT_SIZE):</p>
+<p>​     testDict[i] = i </p>
+<p> assert len(testDict) == DICT_SIZE</p>
+<p> def test1():</p>
+<p>​     for k in testDict.keys():</p>
+<p>​        key = k </p>
+<p>​        value = testDict[k]</p>
+<p> def test2():</p>
+<p>​    for k in testDict:</p>
+<p>​        key = k </p>
+<p>​        value = testDict[k]</p>
+<p>​              </p>
+<p> def test3():</p>
+<p>​    for k in testDict.iterkeys():</p>
+<p>​        key = k </p>
+<p>​        value = testDict[k]</p>
+<p> def test4():</p>
+<p>​    for k,v in testDict.items():</p>
+<p>​        key = k </p>
+<p>​        value = v </p>
+<p> print timeit.timeit(“test1()”, setup=”from <strong>main</strong> import test1”, number=2000)  </p>
+<p> print timeit.timeit(“test2()”, setup=”from <strong>main</strong> import test2”, number=2000)</p>
+<p> print timeit.timeit(“test3()”, setup=”from <strong>main</strong> import test3”, number=2000)</p>
+<p> print timeit.timeit(“test4()”, setup=”from <strong>main</strong> import test4”, number=2000)</p>
+<p>测试结果如下：</p>
+<p>0.698087930679</p>
+<p>0.643119812012</p>
+<p>0.642452955246</p>
+<p>0.88481593132</p>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -215,7 +218,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Web性能压力测试之Webbench使用详解-1"><span class="toc-text">Web性能压力测试之Webbench使用详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-WebBench安装"><span class="toc-text">1.WebBench安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-WebBench使用"><span class="toc-text">2.WebBench使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-测试结果"><span class="toc-text">3.测试结果</span></a></li></ol></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#python-字典遍历方法性能对比-1"><span class="toc-text">python 字典遍历方法性能对比</span></a></li></ol>
   </div>
 </aside>
   
@@ -224,7 +227,7 @@
       
         <div>
           原文链接: 
-          <a href="" target="_blank">http://yoursite.com/passages/Webbench使用详解/</a>
+          <a href="" target="_blank">http://yoursite.com/passages/python 字典遍历方法性能对比/</a>
         </div>
       
       <div>
@@ -294,7 +297,7 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/常用获取元素Driver总结/" data-enable="true">
+    <a href="/passages/一个sql查询排序小技巧/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
     <a href="/passages/1.Python基础/" data-enable="true">

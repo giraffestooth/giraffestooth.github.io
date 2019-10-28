@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Wang Jialu">
+  
+  
+  <title>Python3的原生协程和Tornado异步非阻塞 | Giraffe `s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Tornado,">
+  
+
+  
+  <meta name="description" content="Python3的原生协程和Tornado异步非阻塞  我们知道在程序在执行 IO 密集型任务的时候，程序会因为等待 IO 而阻塞，而协程作为一种用户态的轻量级线程，可以帮我们解决这个问题。协程拥有自己的寄存器上下文和栈。协程调度切换时，将寄存器上下文和栈保存，在调度回来的时候，恢复先前保存的寄存器上下文和栈。因此协程能保留上一次调用时的状态，即所有局部状态的一个特定组合">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2016-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Wang Jialu",
+    share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">Giraffe.*</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | Wang jialu's blog</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/Giraffe-w" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2019-04-26
+    </span>
+    
+      <span>
+        | <a href="/categories/Tornado/"><i class="fa fa-bookmark"></i>Tornado</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    Python3的原生协程和Tornado异步非阻塞
+  </h1>
+  
+  <article class="passage-article">
+    <h1 id="Python3的原生协程和Tornado异步非阻塞-1"><a href="#Python3的原生协程和Tornado异步非阻塞-1" class="headerlink" title="Python3的原生协程和Tornado异步非阻塞"></a>Python3的原生协程和Tornado异步非阻塞</h1><p>  我们知道在程序在执行 IO 密集型任务的时候，程序会因为等待 IO 而阻塞，而协程作为一种用户态的轻量级线程，可以帮我们解决这个问题。协程拥有自己的寄存器上下文和栈。协程调度切换时，将寄存器上下文和栈保存，在调度回来的时候，恢复先前保存的寄存器上下文和栈。因此协程能保留上一次调用时的状态，即所有局部状态的一个特定组合</p>
+<p>​    说人话：说白了就是，当协程遇到io操作而阻塞时，立即切换到别的任务，如果操作完成则进行回调返回执行结果，提高了效率，同时这样也可以充分利用 CPU 和其他资源，这就是异步协程的优势，并且协程本质上是个单进程，相对于多进程来说，无需进程间上下文切换的开销，无需原子操作锁定及同步的开销，编程模型也非常简单。</p>
+<p>​    在python2以及python3.3时代，人们使用协程还得基于greenlet或者gevent，greenlet机制的主要思想是：生成器函数或者协程函数中的yield语句挂起函数的执行，直到稍后使用next()或send()操作进行恢复为止。可以使用一个调度器循环在一组生成器函数之间协作多个任务，它的缺点是必须通过安装三方库进行使用，使用时由于封装特性导致性能有一定的流失。</p>
+<p>​    终于在python3.4中，我们迎来了python的原生协程关键字:Async和Await，它们的底层基于生成器函数，使得协程的实现更加方便。</p>
+<p>​    Async 用来声明一个函数为异步函数，异步函数的特点是能在函数执行过程中挂起，去执行其他异步函数，等到挂起条件（假设挂起条件是sleep(5)）消失后，也就是5秒到了再回来执行。<br>    Await 用来用来声明程序挂起,比如异步程序执行到某一步时需要等待的时间很长，就将此挂起，去执行其他的异步程序</p>
+<p>​    首先我们先来看一个不使用协程的程序</p>
+<p>​    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">def job(t):</span><br><span class="line">    time.sleep(t) </span><br><span class="line">    print(&apos;用了%s&apos; % t)</span><br><span class="line">def main():</span><br><span class="line">    [job(t) for t in range(1,3)]</span><br><span class="line">start = time.time()</span><br><span class="line">main()</span><br><span class="line">print(time.time()-start)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://v3u.cn/v3u/Public/js/editor/attached/image/20190920/20190920070853_68425.png" alt="img">    </p>
+<p>​    从运行结果可以看出，我们的 job 是按顺序执行的。必须执行完 job 1 才能开始执行 job 2， job 1 需要 1 秒的执行时间，job 2 需要 2 秒的执行时间，所以总时间是 3 秒多。</p>
+<p>​    </p>
+<p>​    如果我们使用协程的方式，job 1 在等待 time.sleep(t) 执行结束的时候,是可以切换到 job 2 执行的。</p>
+<p>​    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">import asyncio</span><br><span class="line">async def job(t):  # 使用 async 关键字将一个函数定义为协程</span><br><span class="line">    await asyncio.sleep(t)  # 等待 t 秒, 期间切换执行其他任务</span><br><span class="line">    print(&apos;用了%s秒&apos; % t)</span><br><span class="line">async def main(loop):  # 使用 async 关键字将一个函数定义为协程</span><br><span class="line">    tasks = [loop.create_task(job(t)) for t in range(1,3)]  # 创建任务, 不立即执行</span><br><span class="line">    await asyncio.wait(tasks)  # 执行并等待所有任务完成</span><br><span class="line">start = time.time()</span><br><span class="line">loop = asyncio.get_event_loop()  # 建立 loop</span><br><span class="line">loop.run_until_complete(main(loop))  # 执行 loop</span><br><span class="line">loop.close()  # 关闭 loop</span><br><span class="line"></span><br><span class="line">print(time.time()-start)</span><br></pre></td></tr></table></figure>
+
+<p>​     <img src="https://v3u.cn/v3u/Public/js/editor/attached/image/20190920/20190920071108_26974.png" alt="img"></p>
+<p>​    从运行结果可以看出，我们没有等待 job 1 执行结束再开始执行 job 2，而是 job 1 触发 await 的时候切换到了 job 2 。 这时 job 1 和 job 2 同时在执行 await asyncio.sleep(t)，所以最终程序的执行时间取决于执行时间最长的那个 job，也就是 job 2 的执行时间：2 秒</p>
+<p>​    由此可见，效率提高非常明显。</p>
+<p>​    同理，tornado默认是同步阻塞机制，如果要激活异步非阻塞的特性，需要使用异步写法，在我使用的装饰器的形式来声明异步方法，而在这里，我们同样可以使用async和await来进行协程的异步非阻塞任务</p>
+<p>​    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import tornado.web</span><br><span class="line">from tornado import gen</span><br><span class="line">class IndexHandler(tornado.web.RequestHandler):</span><br><span class="line">    def get(self):</span><br><span class="line">        self.write(&apos;index&apos;)</span><br><span class="line">async def doing():</span><br><span class="line">    await gen.sleep(10)  # here are doing some things</span><br><span class="line">    return &apos;Non-Blocking&apos;</span><br><span class="line">class NonBlockingHandler(tornado.web.RequestHandler):</span><br><span class="line">    async def get(self):</span><br><span class="line">        result = await doing()</span><br><span class="line">        self.write(result)</span><br><span class="line">application = tornado.web.Application([</span><br><span class="line">    (r&quot;/&quot;, IndexHandler),</span><br><span class="line">    (r&quot;/nonblocking&quot;, NonBlockingHandler),</span><br><span class="line">])</span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    application.listen(8888)</span><br><span class="line">    tornado.ioloop.IOLoop.instance().start()</span><br></pre></td></tr></table></figure>
+
+<p>​     可以看到，虽然代码可读性下降了一点，但是性能和效率却实实在在的提升了</p>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python3的原生协程和Tornado异步非阻塞-1"><span class="toc-text">Python3的原生协程和Tornado异步非阻塞</span></a></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/Python3的原生协程和Tornado异步非阻塞/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="WeChatID">
+              
+                <p>WeChatID</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/阿里云服务器部署——mysql数据库数据迁移(1)/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/负载均衡的五种策略/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+  
+  
+</div>
+    
+
+
+
+
+
+    
+  </body>
+</html>

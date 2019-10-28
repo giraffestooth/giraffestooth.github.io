@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Wang Jialu">
+  
+  
+  <title>关于mysql索引树形结构为B树+而非B树？？ | Giraffe `s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Mysql,">
+  
+
+  
+  <meta name="description" content="InnoDB一棵B+树可以存放多少行数据？这个问题简单回答是：越2千万为什么是这么多呢？因为这是可以算出来的，要搞清楚这个问题，我们先从InnoDB索引数据结构、数据组织方式说起。我们都知道计算机在存储数据的时候，有最小存储单元，这就好比我们今天进行现金的流通最小单位是一毛。在计算机中磁盘存储数据最小单元是扇区，一个扇区的大小是512字节，而文件系统（例如XFS/EXT4）他的最小单元是块，一个块的大小是4k">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2016-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Wang Jialu",
+    share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">Giraffe.*</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | Wang jialu's blog</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/Giraffe-w" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2019-05-15
+    </span>
+    
+      <span>
+        | <a href="/categories/Mysql/"><i class="fa fa-bookmark"></i>Mysql</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    关于mysql索引树形结构为B树+而非B树？？
+  </h1>
+  
+  <article class="passage-article">
+    <h1 id="关于mysql索引树形结构为B树-而非B树？？"><a href="#关于mysql索引树形结构为B树-而非B树？？" class="headerlink" title="关于mysql索引树形结构为B树+而非B树？？"></a>关于mysql索引树形结构为B树+而非B树？？</h1><p><strong>InnoDB一棵B+树可以存放多少行数据？这个问题简单回答是：越2千万</strong></p>
+<p>为什么是这么多呢？</p>
+<p>因为这是可以算出来的，要搞清楚这个问题，我们先从InnoDB索引数据结构、数据组织方式说起。</p>
+<p>我们都知道计算机在存储数据的时候，有最小存储单元，这就好比我们今天进行现金的流通最小单位是一毛。</p>
+<p>在计算机中磁盘存储数据最小单元是扇区，一个扇区的大小是512字节，而文件系统（例如XFS/EXT4）他的最小单元是块，一个块的大小是4k</p>
+<p>而对于我们的InnoDB存储引擎也有自己的最小储存单元——页（Page），一个页的大小是16K。</p>
+<p>下面几张图可以帮你理解最小存储单元：</p>
+<p>文件系统中一个文件大小只有1个字节，但不得不占磁盘上4KB的空间。</p>
+<p>innodb的所有数据文件（后缀为ibd的文件），他的大小始终都是16384（16k）的整数倍。</p>
+<p>磁盘扇区、文件系统、InnoDB存储引擎都有各自的最小存储单元。</p>
+<p>在MySQL中我们的InnoDB页的大小默认是16k，当然也可以通过参数设置：</p>
+<p>数据表中的数据都是存储在页中的，所以一个页中能存储多少行数据呢？假设一行数据的大小是1k，那么一个页可以存放16行这样的数据。</p>
+<p>如果数据库只按这样的方式存储，那么如何查找数据就成为一个问题</p>
+<p>因为我们不知道要查找的数据存在哪个页中，也不可能把所有的页遍历一遍，那样太慢了。</p>
+<p>所以人们想了一个办法，用B+树的方式组织这些数据。如图所示：</p>
+<p>我们先将数据记录按主键进行排序，分别存放在不同的页中（为了便于理解我们这里一个页中只存放3条记录，实际情况可以存放很多）</p>
+<p>除了存放数据的页以外，还有存放键值+指针的页，如图中page number=3的页，该页存放键值和指向数据页的指针，这样的页由N个键值+指针组成。</p>
+<p>当然它也是排好序的。这样的数据组织形式，我们称为索引组织表。</p>
+<p>现在来看下，要查找一条数据，怎么查？</p>
+<p>如：select * from user where id=5;</p>
+<p>这里id是主键,我们通过这棵B+树来查找，首先找到根页，你怎么知道user表的根页在哪呢？</p>
+<p>其实每张表的根页位置在表空间文件中是固定的，即page number=3的页（这点我们下文还会进一步证明）</p>
+<p>找到根页后通过二分查找法，定位到id=5的数据应该在指针P5指向的页中，那么进一步去page number=5的页中查找，同样通过二分查询法即可找到id=5的记录：</p>
+<p>5 zhao2 27</p>
+<p>现在我们清楚了InnoDB中主键索引B+树是如何组织数据、查询数据的，我们总结一下：</p>
+<p><strong>1、</strong>InnoDB存储引擎的最小存储单元是页，页可以用于存放数据也可以用于存放键值+指针，在B+树中叶子节点存放数据，非叶子节点存放键值+指针。</p>
+<p><strong>2、</strong>索引组织表通过非叶子节点的二分查找法以及指针确定数据在哪个页中，进而在去数据页中查找到需要的数据；</p>
+<p>那么回到我们开始的问题，通常一棵B+树可以存放多少行数据？</p>
+<p>这里我们先假设B+树高为2，即存在一个根节点和若干个叶子节点，那么这棵B+树的存放总记录数为：根节点指针数*单个叶子节点记录行数。</p>
+<p>上文我们已经说明单个叶子节点（页）中的记录数=16K/1K=16。（这里假设一行记录的数据大小为1k，实际上现在很多互联网业务数据记录大小通常就是1K左右）。</p>
+<p>那么现在我们需要计算出非叶子节点能存放多少指针？</p>
+<p>其实这也很好算，我们假设主键ID为bigint类型，长度为8字节，而指针大小在InnoDB源码中设置为6字节，这样一共14字节</p>
+<p>我们一个页中能存放多少这样的单元，其实就代表有多少指针，即16384/14=1170。</p>
+<p>那么可以算出一棵高度为2的B+树，能存放1170*16=18720条这样的数据记录。</p>
+<p>根据同样的原理我们可以算出一个高度为3的B+树可以存放：1170<em>1170</em>16=21902400条这样的记录。</p>
+<p>所以在InnoDB中B+树高度一般为1-3层，它就能满足千万级的数据存储。</p>
+<p>在查找数据时一次页的查找代表一次IO，所以通过主键索引查询通常只需要1-3次IO操作即可查找到数据。</p>
+<blockquote>
+<p><strong>怎么得到InnoDB主键索引B+树的高度？</strong></p>
+</blockquote>
+<p>上面我们通过推断得出B+树的高度通常是1-3，下面我们从另外一个侧面证明这个结论。</p>
+<p>在InnoDB的表空间文件中，约定<strong>page number为3</strong>的代表主键索引的根页，而在根页偏移量为<strong>64</strong>的地方存放了该B+树的page level。</p>
+<p>如果page level为1，树高为2，page level为2，则树高为3。即B+树的高度=page level+1；下面我们将从实际环境中尝试找到这个page level。</p>
+<p>在实际操作之前，你可以通过InnoDB元数据表确认主键索引根页的page number为3，你也可以从《InnoDB存储引擎》这本书中得到确认。</p>
+<p>可以看出数据库dbt3下的customer表、lineitem表主键索引根页的page number均为3，而其他的二级索引page number为4。</p>
+<p>关于二级索引与主键索引的区别请参考MySQL相关书籍，本文不在此介绍。</p>
+<p>下面我们对数据库表空间文件做想相关的解析：</p>
+<p>因为主键索引B+树的根页在整个表空间文件中的第3个页开始，所以可以算出它在文件中的偏移量：16384*3=49152（16384为页大小）。</p>
+<p>另外根据《InnoDB存储引擎》中描述在根页的64偏移量位置前2个字节，保存了page level的值</p>
+<p>因此我们想要的page level的值在整个文件中的偏移量为：16384*3+64=49152+64=49216，前2个字节中。</p>
+<p>接下来我们用hexdump工具，查看表空间文件指定偏移量上的数据：</p>
+<p><strong>linetem表的page level为2，B+树高度为page level+1=3；</strong></p>
+<p><strong>region表的page level为0，B+树高度为page level+1=1；</strong></p>
+<p><strong>customer表的page level为2，B+树高度为page level+1=3；</strong></p>
+<p>这三张表的数据量如下：</p>
+<blockquote>
+<p><strong>总结：</strong></p>
+</blockquote>
+<p>lineitem表的数据行数为600多万，B+树高度为3，customer表数据行数只有15万，B+树高度也为3。可以看出尽管数据量差异较大，这两个表树的高度都是3</p>
+<p>换句话说这两个表通过索引查询效率并没有太大差异，因为都只需要做3次IO。那么如果有一张表行数是一千万，那么他的B+树高度依旧是3，查询效率仍然不会相差太大。</p>
+<p>region表只有5行数据，当然他的B+树高度为1。</p>
+<blockquote>
+<p><strong>最后回顾一道面试题</strong></p>
+</blockquote>
+<p>有一道MySQL的面试题，为什么MySQL的索引要使用B+树而不是其它树形结构?比如B树？</p>
+<p>现在这个问题的复杂版本可以参考本文；</p>
+<p>他的简单版本回答是：</p>
+<p>因为B树不管叶子节点还是非叶子节点，都会保存数据，这样导致在非叶子节点中能保存的指针数量变少（有些资料也称为扇出）</p>
+<p>指针少的情况下要保存大量数据，只能增加树的高度，导致IO操作变多，查询性能变低；</p>
+<blockquote>
+<p>小结</p>
+</blockquote>
+<p>本文从一个问题出发，逐步介绍了InnoDB索引组织表的原理、查询方式，并结合已有知识，回答该问题，结合实践来证明。</p>
+<p>当然为了表述简单易懂，文中忽略了一些细枝末节，比如一个页中不可能所有空间都用于存放数据，它还会存放一些少量的其他字段比如page level，index number等等，另外还有页的填充因子也导致一个页不可能全部用于保存数据。</p>
+<p>关于二级索引数据存取方式可以参考MySQL相关书籍，他的要点是结合主键索引进行回表查询。</p>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#关于mysql索引树形结构为B树-而非B树？？"><span class="toc-text">关于mysql索引树形结构为B树+而非B树？？</span></a></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/关于mysql索引树形结构为B树+而非B树？？/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="WeChatID">
+              
+                <p>WeChatID</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/阿里云服务器Centos7.3安装Mysql(2)(1)/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/阿里云服务器部署——mysql数据库数据迁移(1)/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+  
+  
+</div>
+    
+
+
+
+
+
+    
+  </body>
+</html>

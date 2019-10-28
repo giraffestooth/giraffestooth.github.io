@@ -6,16 +6,16 @@
   <meta name="author" content="Wang Jialu">
   
   
-  <title>归档: 2018/3 | Giraffe `s blog</title>
+  <title>为什么要在tornado前面放nginx | Giraffe `s blog</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Hexo, Theme-AD">
+    <meta name="keywords" content="Tornado,">
   
 
   
-  <meta name="description" content="王嘉璐的小站">
+  <meta name="description" content="为什么要在tornado前面放nginx原因在于，Python虽然有多线程，但是Python的解释器有GIL  这点非常影响了Python和Tornado利用多核的能力，所以只能通过多进程来利用多核。既然多进程，一般就需要在前端放置nginx haproxy做为负载均衡的反向代理，或是使用这些应用服务器的wsgi模块来管理进程的生命周期等等。另外对于静态文件的服务，也是nginx之类的更具有优势。（他们直接把请求转发到tornado的进程中，你根本不用管请求怎么来的，专心写你的程序。）">
 
   
 
@@ -38,7 +38,7 @@
     welcome: {"enable":false,"interval":30},
     start_time: "2016-02-10",
     passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
-    is_post: false,
+    is_post: true,
     lock: false,
     author: "Wang Jialu",
     share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
@@ -156,18 +156,56 @@
 </nav>
 <div id="site-process"></div>
     <main>
-      <div class="timeline">
-  <h2 class="timeline-title">归档: 24篇</h2>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2019-07-25
+    </span>
+    
+      <span>
+        | <a href="/categories/Tornado/"><i class="fa fa-bookmark"></i>Tornado</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    为什么要在tornado前面放nginx
+  </h1>
   
-    
-      <h3 class="timeline-subtitle">2018</h3>
-    
-    <div class="timeline-item">
-      <time>2018-03-02</time>
-      <a target="_self" href="/passages/WebDriver/">WebDriver--定位元素的8种方式</a>
-    </div>
+  <article class="passage-article">
+    <h1 id="为什么要在tornado前面放nginx-1"><a href="#为什么要在tornado前面放nginx-1" class="headerlink" title="为什么要在tornado前面放nginx"></a>为什么要在tornado前面放nginx</h1><p>原因在于，Python虽然有多线程，但是Python的解释器有GIL  这点非常影响了Python和Tornado利用多核的能力，所以只能通过多进程来利用多核。既然多进程，一般就需要在前端放置nginx haproxy做为负载均衡的反向代理，或是使用这些应用服务器的wsgi模块来管理进程的生命周期等等。另外对于静态文件的服务，也是nginx之类的更具有优势。（他们直接把请求转发到tornado的进程中，你根本不用管请求怎么来的，专心写你的程序。）</p>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#为什么要在tornado前面放nginx-1"><span class="toc-text">为什么要在tornado前面放nginx</span></a></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/为什么要在tornado前面放nginx/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
   
 </div>
+
     </main>
     
     <div class="site-footer-wrapper">
@@ -227,15 +265,15 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="javascript:void(0);" data-enable="false">
+    <a href="/passages/tornado，你值得拥有/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="javascript:void(0);" data-enable="false">
+    <a href="/passages/Docker常用命令/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
   <div class="bottom-bar-right">
-    <a href="javascript:void(0);" data-enable="false" id="site-toc-show-btn">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
       <i class="fa fa-bars"></i>
     </a>
     

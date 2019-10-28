@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Wang Jialu">
+  
+  
+  <title>Python3的原生协程和Tornado异步非阻塞 | Giraffe `s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Python,">
+  
+
+  
+  <meta name="description" content="Python3的自省机制自省的意思，从书面来讲就是自我反省，自我剖析。联机帮助（help）当我们对某一个关键字和模块不是很熟悉，这时候就可以向python发送 救命（help），首先输入help()函数，进行help命令继续输入想要查找的内容。">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2016-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Wang Jialu",
+    share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">Giraffe.*</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | Wang jialu's blog</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/Giraffe-w" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2019-06-14
+    </span>
+    
+      <span>
+        | <a href="/categories/Python/"><i class="fa fa-bookmark"></i>Python</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    Python3的原生协程和Tornado异步非阻塞
+  </h1>
+  
+  <article class="passage-article">
+    <h1 id="Python3的自省机制-1"><a href="#Python3的自省机制-1" class="headerlink" title="Python3的自省机制"></a>Python3的自省机制</h1><p>自省的意思，从书面来讲就是自我反省，自我剖析。</p>
+<h1 id="联机帮助（help）-1"><a href="#联机帮助（help）-1" class="headerlink" title="联机帮助（help）"></a>联机帮助（help）</h1><p>当我们对某一个关键字和模块不是很熟悉，这时候就可以向python发送 救命（help），首先输入<code>help()</code>函数，进行help命令继续输入想要查找的内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; help()</span><br><span class="line">help&gt;__dict__  #会得到官方说明</span><br><span class="line">Help on dict object:</span><br><span class="line"></span><br><span class="line">__dict__ = class dict(object)</span><br><span class="line"> |  dict() -&gt; new empty dictionary</span><br><span class="line"> |  dict(mapping) -&gt; new dictionary initialized from a mapping object&apos;s</span><br><span class="line"> |      (key, value) pairs</span><br><span class="line">-- More  --     #点击 enter 键可以继续知道详情</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; help(&quot;str&quot;)    #同样也可以查到， 适用于模块查询</span><br><span class="line">Help on class str in module builtins:</span><br><span class="line"></span><br><span class="line">class str(object)</span><br><span class="line"> |  str(object=&apos;&apos;) -&gt; str</span><br><span class="line"> |  str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</span><br><span class="line"> |</span><br><span class="line">-- More  --</span><br></pre></td></tr></table></figure>
+
+<h1 id="dir"><a href="#dir" class="headerlink" title="dir()"></a>dir()</h1><p>上面的使用我们已经知道了查找的内容，如果连名字都不知道怎么办呢，这时候可以使用dir函数，可以查看模块以及所有对象类型，还是比较好用的。</p>
+<p><strong>他返回传递给他的任何对象和属性名称经过排序列表。</strong></p>
+<p>如果不传入参数，他默认查找当前的作用域。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; dir()</span><br><span class="line">[&apos;__annotations__&apos;, &apos;__builtins__&apos;, &apos;__doc__&apos;, &apos;__loader__&apos;, &apos;__name__&apos;, &apos;__package__&apos;, &apos;__spec__&apos;]</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>适用于所有的对象类型，比如：</p>
+<ul>
+<li>字符串</li>
+<li>数字</li>
+<li>列表</li>
+<li>类对象</li>
+<li>类方法</li>
+<li>元祖</li>
+<li>字典</li>
+<li>函数</li>
+<li>定制类</li>
+<li>传递数字</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; dir(int(5))</span><br><span class="line">[&apos;__abs__&apos;, &apos;__add__&apos;, &apos;__and__&apos;, &apos;__bool__&apos;, &apos;__ceil__&apos;, &apos;__class__&apos;, &apos;__delattr__&apos;, &apos;__dir__&apos;, &apos;__divmod__&apos;, &apos;__doc__&apos;, &apos;__eq__&apos;, &apos;__float__&apos;, &apos;__floor__&apos;, &apos;__floordiv__&apos;, &apos;__format__&apos;, &apos;__ge__&apos;, &apos;__getattribute__&apos;</span><br><span class="line">, &apos;__getnewargs__&apos;, &apos;__gt__&apos;, &apos;__hash__&apos;, &apos;__index__&apos;, &apos;__init__&apos;, &apos;__init_subclass__&apos;, &apos;__int__&apos;, &apos;__invert__&apos;, &apos;__le__&apos;, &apos;__lshift__&apos;, &apos;__lt__&apos;, &apos;__mod__&apos;, &apos;__mul__&apos;, &apos;__ne__&apos;, &apos;__neg__&apos;, &apos;__new__&apos;, &apos;__or__&apos;, &apos;__po</span><br><span class="line">s__&apos;, &apos;__pow__&apos;, &apos;__radd__&apos;, &apos;__rand__&apos;, &apos;__rdivmod__&apos;, &apos;__reduce__&apos;, &apos;__reduce_ex__&apos;, &apos;__repr__&apos;, &apos;__rfloordiv__&apos;, &apos;__rlshift__&apos;, &apos;__rmod__&apos;, &apos;__rmul__&apos;, &apos;__ror__&apos;, &apos;__round__&apos;, &apos;__rpow__&apos;, &apos;__rrshift__&apos;, &apos;__rshift_</span><br><span class="line">_&apos;, &apos;__rsub__&apos;, &apos;__rtruediv__&apos;, &apos;__rxor__&apos;, &apos;__setattr__&apos;, &apos;__sizeof__&apos;, &apos;__str__&apos;, &apos;__sub__&apos;, &apos;__subclasshook__&apos;, &apos;__truediv__&apos;, &apos;__trunc__&apos;, &apos;__xor__&apos;, &apos;bit_length&apos;, &apos;conjugate&apos;, &apos;denominator&apos;, &apos;from_bytes&apos;, &apos;imag&apos;</span><br><span class="line">, &apos;numerator&apos;, &apos;real&apos;, &apos;to_bytes&apos;]</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="doc-文档描述"><a href="#doc-文档描述" class="headerlink" title="__doc__文档描述"></a><code>__doc__</code>文档描述</h1><p>它包含了描述对象的注释，用<code>__doc__</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; dir.__doc__</span><br><span class="line">&quot;dir([object]) -&gt; list of strings\n\nIf called without an argument, return the names in the current scope.\nElse, return an alphabetized list of names comprising (some of) the attributes\nof the given object, and of</span><br><span class="line">attributes reachable from it.\nIf the object supplies a method named __dir__, it will be used; otherwise\nthe default dir() logic is used and returns:\n  for a module object: the module&apos;s attributes.\n  for a class o</span><br><span class="line">bject:  its attributes, and recursively the attributes\n    of its bases.\n  for any other object: its attributes, its class&apos;s attributes, and\n    recursively the attributes of its class&apos;s base classes.&quot;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="检查python对象"><a href="#检查python对象" class="headerlink" title="检查python对象"></a>检查python对象</h1><p>我们通过以下几点进行查找。</p>
+<ul>
+<li>对象的名称用 <code>__name__</code></li>
+<li>对象的类型用<code>type()</code>最好用<code>sinstance()</code></li>
+<li>对象知道什么用<code>id()</code></li>
+<li>对象能做些什么用<code>callable()</code></li>
+<li>对象的父对象是谁用<code>issubclass()</code></li>
+</ul>
+<h2 id="对象名称："><a href="#对象名称：" class="headerlink" title="对象名称："></a>对象名称：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def a():</span><br><span class="line">    pass</span><br><span class="line">b=a</span><br><span class="line">print(b.__name__)    #始终都会找到最初是的名称，中间的转化的不算。</span><br><span class="line">a</span><br></pre></td></tr></table></figure>
+
+<h2 id="对象类型"><a href="#对象类型" class="headerlink" title="对象类型"></a>对象类型</h2><p>使用<code>type()</code>，这里不讲述了，在对象，类，type关系已经详细讲过了，他会返回一个对象类型，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def a():</span><br><span class="line">    pass</span><br><span class="line">b=a</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(type(a))</span><br><span class="line">print(type(1))</span><br><span class="line">#打印结果</span><br><span class="line">&lt;class &apos;function&apos;&gt;</span><br><span class="line">&lt;class &apos;int&apos;&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="对象知道什么用id"><a href="#对象知道什么用id" class="headerlink" title="对象知道什么用id()"></a>对象知道什么用id()</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">a=[1,2,3]</span><br><span class="line">b=[1,2,3]</span><br><span class="line"></span><br><span class="line">c=a</span><br><span class="line">print(id(a))</span><br><span class="line">print(id(b))</span><br><span class="line">print(id(c))</span><br><span class="line"></span><br><span class="line">print(a is b)</span><br><span class="line">print(c is a)</span><br><span class="line"></span><br><span class="line">print((a==b))</span><br></pre></td></tr></table></figure>
+
+<p>看结果，<code>a is b</code>比较用的是ID，<code>a==b</code>比较用的是value。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2933462198600</span><br><span class="line">2933461439048</span><br><span class="line">2933462198600</span><br><span class="line">False</span><br><span class="line">True</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
+
+<h2 id="对象能做些什么用callable"><a href="#对象能做些什么用callable" class="headerlink" title="对象能做些什么用callable()"></a>对象能做些什么用callable()</h2><p>这里指函数或方法的对象的可调用性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def b():</span><br><span class="line">    pass</span><br><span class="line"></span><br><span class="line">print(callable(b))</span><br><span class="line">print(callable(str)) #str 是一个内置方法，是可以调用。</span><br><span class="line">#打印结果 </span><br><span class="line">True </span><br><span class="line">True</span><br></pre></td></tr></table></figure>
+
+<h2 id="对象的父对象是谁用issubclass"><a href="#对象的父对象是谁用issubclass" class="headerlink" title="对象的父对象是谁用issubclass()"></a>对象的父对象是谁用issubclass()</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class A:</span><br><span class="line">    pass</span><br><span class="line">class B(A):</span><br><span class="line">    pass</span><br><span class="line"></span><br><span class="line">class C(B):</span><br><span class="line">    pass</span><br><span class="line"></span><br><span class="line">print(C.__bases__) #查找父类</span><br><span class="line">print(C.__mro__)# 寻找MRO 路线</span><br><span class="line">print(issubclass(C,A))#比较是不是属于父类</span><br></pre></td></tr></table></figure>
+
+<p>打印结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(&lt;class &apos;__main__.B&apos;&gt;,)</span><br><span class="line">(&lt;class &apos;__main__.C&apos;&gt;, &lt;class &apos;__main__.B&apos;&gt;, &lt;class &apos;__main__.A&apos;&gt;, &lt;class &apos;object&apos;&gt;)</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python3的自省机制-1"><span class="toc-text">Python3的自省机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#联机帮助（help）-1"><span class="toc-text">联机帮助（help）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dir"><span class="toc-text">dir()</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#doc-文档描述"><span class="toc-text">__doc__文档描述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#检查python对象"><span class="toc-text">检查python对象</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#对象名称："><span class="toc-text">对象名称：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对象类型"><span class="toc-text">对象类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对象知道什么用id"><span class="toc-text">对象知道什么用id()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对象能做些什么用callable"><span class="toc-text">对象能做些什么用callable()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对象的父对象是谁用issubclass"><span class="toc-text">对象的父对象是谁用issubclass()</span></a></li></ol></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/Python3的自省机制/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="WeChatID">
+              
+                <p>WeChatID</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/Docker常用命令/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/阿里云服务器docker搭建fastDfs(2)/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+  
+  
+</div>
+    
+
+
+
+
+
+    
+  </body>
+</html>

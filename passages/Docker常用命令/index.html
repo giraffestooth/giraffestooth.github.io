@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Wang Jialu">
+  
+  
+  <title>Docker常用命令 | Giraffe `s blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Docker,Docker,">
+  
+
+  
+  <meta name="description" content="Docker常用命令除了基本的docker pull，docker image，docker ps，还有一些命令及参数也很重要，在此记录下来避免遗忘。">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2016-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Wang Jialu",
+    share: {"twitter":false,"facebook":false,"weibo":false,"qq":false,"wechat":false},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">Giraffe.*</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | Wang jialu's blog</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/Giraffe-w" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2019-07-02
+    </span>
+    
+      <span>
+        | <a href="/categories/Docker/"><i class="fa fa-bookmark"></i>Docker</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    Docker常用命令
+  </h1>
+  
+  <article class="passage-article">
+    <h1 id="Docker常用命令-1"><a href="#Docker常用命令-1" class="headerlink" title="Docker常用命令"></a>Docker常用命令</h1><p>除了基本的<code>docker pull</code>，<code>docker image</code>，<code>docker ps</code>，还有一些命令及参数也很重要，在此记录下来避免遗忘。</p>
+<h1 id="环境信息"><a href="#环境信息" class="headerlink" title="环境信息"></a>环境信息</h1><p>以下是本次操作的环境：</p>
+<p>操作都基于这两个容器进行：</p>
+<ul>
+<li>操作系统：CentOS Linux release 7.7.1908</li>
+<li>Docker：19.03.2</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@vostro harbor]# docker ps</span><br><span class="line">CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS              PORTS               NAMES</span><br><span class="line">11548ac31116        tomcat:9.0.26-jdk8-openjdk   &quot;catalina.sh run&quot;        6 seconds ago       Up 5 seconds        8080/tcp            inspiring_ardinghelli</span><br><span class="line">21c0499ccc76        nginx                        &quot;nginx -g &apos;daemon of…&quot;   29 minutes ago      Up 29 minutes       80/tcp              strange_zhukovsky</span><br></pre></td></tr></table></figure>
+
+<h1 id="整体信息"><a href="#整体信息" class="headerlink" title="整体信息"></a>整体信息</h1><p><code>docker info</code>用来看整体信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@vostro harbor]# docker info</span><br><span class="line">Client:</span><br><span class="line"> Debug Mode: false</span><br><span class="line"> </span><br><span class="line">Server:</span><br><span class="line"> Containers: 0</span><br><span class="line">  Running: 0</span><br><span class="line">  Paused: 0</span><br><span class="line">  Stopped: 0</span><br><span class="line"> Images: 19</span><br><span class="line"> Server Version: 19.03.2</span><br><span class="line"> Storage Driver: overlay</span><br><span class="line">  Backing Filesystem: xfs</span><br><span class="line">  Supports d_type: true</span><br></pre></td></tr></table></figure>
+
+<h1 id="释放空间"><a href="#释放空间" class="headerlink" title="释放空间"></a>释放空间</h1><p><code>docker system prune</code>会删除以下内容：</p>
+<ul>
+<li>已经停止的容器；</li>
+<li>未被使用的网络；</li>
+<li>所有未打标签的镜像；</li>
+<li>构建镜像时产生的缓存；</li>
+</ul>
+<p><strong>注意：此命令删除的东西过多，所以要慎用</strong></p>
+<ul>
+<li>删除已经停止的容器：<code>docker container prune</code></li>
+<li>删除未被使用的网络：<code>docker network prune</code></li>
+<li>删除没有Tag的镜像：<code>docker image prune</code></li>
+<li>删除没有容器的镜像：<code>docker image prune -a</code></li>
+<li>删除未被使用的数据卷：<code>docker volume prune</code></li>
+</ul>
+<h1 id="过滤"><a href="#过滤" class="headerlink" title="过滤"></a>过滤</h1><p>执行<code>docker ps</code>的时候会列出所有运行状态的容器，有时我们只想看自己关注的，这时可以对结果做过滤：</p>
+<ol>
+<li>按容器ID过滤：</li>
+</ol>
+<p><code>docker ps -f id=11548ac31116</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@vostro harbor]# docker ps -f id=11548ac31116</span><br><span class="line">CONTAINER ID        IMAGE                        COMMAND             CREATED             STATUS              PORTS               NAMES</span><br><span class="line">11548ac31116        tomcat:9.0.26-jdk8-openjdk   &quot;catalina.sh run&quot;   4 minutes ago       Up 4 minutes        8080/tcp            inspiring_ardinghelli</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>按容器名称过滤：</li>
+</ol>
+<p><code>docker ps -f name=inspiring_ardinghelli</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@vostro harbor]# docker ps -f name=inspiring_ardinghelli</span><br><span class="line">CONTAINER ID        IMAGE                        COMMAND             CREATED             STATUS              PORTS               NAMES</span><br><span class="line">11548ac31116        tomcat:9.0.26-jdk8-openjdk   &quot;catalina.sh run&quot;   7 minutes ago       Up 7 minutes        8080/tcp            inspiring_ardinghelli</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>按镜像过滤，这种过滤再细分有三种：</p>
+<ul>
+<li>按镜像名和TAG过滤：<code>docker ps -f ancestor=tomcat:9.0.26-jdk8-openjdk</code></li>
+<li>按镜像ID过滤：<code>docker ps -f ancestor=4965bfab1881</code></li>
+<li>按照镜像摘要信息过滤<code>docker ps -f ancestor=tomcat@sha256:67a9904e3ceb03abc50db7b374db7362f7e44d08a41488dd24c2bb14df8989a3</code></li>
+</ul>
+<p>镜像的摘要信息如何获取呢？执行命令<code>docker inspect tomcat:9.0.26-jdk8-openjdk</code>可以获取镜像的详情，如下图所示，红框中就是摘要信息：</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>按容器状态过滤：<code>docker ps -f status=running</code>，状态有这些：<code>created, restarting, running, removing, paused, exited, dead</code></p>
+</li>
+<li><p>还有其他的过滤条件，不过不常用到，如下图：</p>
+</li>
+</ol>
+<h1 id="信息获取"><a href="#信息获取" class="headerlink" title="信息获取"></a>信息获取</h1><ol>
+<li><p>查看容器所占硬盘空间：</p>
+<p><code>docker ps -s</code></p>
+<p>上图红框中就是容器资源占用情况，508MB表示：镜像大小+容器自身大小，40KB表示容器自身所占资源大小。</p>
+</li>
+<li><p>查看容器信息时只看某些字段，例如只看容器ID、镜像、容器名称这三列：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps --format “table &#123;&#123;.ID&#125;&#125;: &#123;&#123;.Image&#125;&#125;: &#123;&#123;.Names&#125;&#125;”</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@vostro harbor]# docker ps --format &quot;table &#123;&#123;.ID&#125;&#125;: &#123;&#123;.Image&#125;&#125;: &#123;&#123;.Names&#125;&#125;&quot;</span><br><span class="line">CONTAINER ID: IMAGE: NAMES</span><br><span class="line">11548ac31116: tomcat:9.0.26-jdk8-openjdk: inspiring_ardinghelli</span><br><span class="line">21c0499ccc76: nginx: strange_zhukovsky</span><br></pre></td></tr></table></figure>
+
+<p>下图展示了所有的列的名称：</p>
+</li>
+</ol>
+<ol start="3">
+<li><p>如下图红框所示，当字段内容过长时，展示的是部分内容，如果想查看完整信息请使用</p>
+<p><code>docker ps --no-trunc</code></p>
+</li>
+</ol>
+<ol start="4">
+<li>在使用docker history命令查看镜像的构建信息时，也会因为内容过长而被省略，如下图，此时也能用–no-trunc参数看到被省略的信息：</li>
+</ol>
+<h1 id="组合使用"><a href="#组合使用" class="headerlink" title="组合使用"></a>组合使用</h1><ol>
+<li><p>只显示Tomcat容器的ID字段：</p>
+<p><code>docker ps -f ancestor=tomcat:9.0.26-jdk8-openjdk -q</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@vostro harbor]# docker ps -f ancestor=tomcat:9.0.26-jdk8-openjdk -q</span><br><span class="line">11548ac31116</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>上面的命令可以得到Tomcat容器的ID字段，如果我们想停止该容器，将上述命令和<code>docker stop</code>组合起来使用即可：</p>
+<p><code>docker stop $(docker ps -f ancestor=tomcat:9.0.26-jdk8-openjdk -q)</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@vostro harbor]# docker stop $(docker ps -f ancestor=tomcat:9.0.26-jdk8-openjdk -q)</span><br><span class="line">11548ac31116</span><br><span class="line">[root@vostro harbor]# docker ps -a</span><br><span class="line">CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS                        PORTS               NAMES</span><br><span class="line">11548ac31116        tomcat:9.0.26-jdk8-openjdk   &quot;catalina.sh run&quot;        About an hour ago   Exited (143) 43 seconds ago                       inspiring_ardinghelli</span><br><span class="line">21c0499ccc76        nginx                        &quot;nginx -g &apos;daemon of…&quot;   2 hours ago         Up 2 hours                    80/tcp              strange_zhukovsky</span><br></pre></td></tr></table></figure>
+
+<p>可见tomcat容器已经停止。</p>
+</li>
+</ol>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker常用命令-1"><span class="toc-text">Docker常用命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#环境信息"><span class="toc-text">环境信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#整体信息"><span class="toc-text">整体信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#释放空间"><span class="toc-text">释放空间</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#过滤"><span class="toc-text">过滤</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#信息获取"><span class="toc-text">信息获取</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#组合使用"><span class="toc-text">组合使用</span></a></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 王嘉璐</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://yoursite.com/passages/Docker常用命令/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+    <div class="passage-tags">
+     
+      <a href="/tags/Docker/"><i class="fa fa-tags"></i>Docker</a>
+    
+    </div>
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="WeChatID">
+              
+                <p>WeChatID</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/为什么要在tornado前面放nginx/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/Python3的自省机制/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+  
+  
+</div>
+    
+
+
+
+
+
+    
+  </body>
+</html>
